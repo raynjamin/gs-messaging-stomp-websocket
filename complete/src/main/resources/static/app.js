@@ -1,4 +1,5 @@
 var stompClient = null;
+var currentUser = null;
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -16,6 +17,10 @@ function connect() {
     var socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
+        var urlparts = socket._transport.url.split("/");
+
+        currentUser = urlparts[urlparts.length - 2];
+
         setConnected(true);
         console.log('Connected: ' + frame);
     });
@@ -30,16 +35,11 @@ function disconnect() {
 }
 
 function sendName() {
-    let channel = $("#channel").val();
-
-    for (var x in stompClient.subscriptions) {
-        stompClient.unsubscribe(x);
-    }
-
-    stompClient.subscribe('/topic/' + channel, function (greeting) {
+    stompClient.subscribe('/user/' + currentUser + "/mud/" + channel, function (greeting) {
         showGreeting(JSON.parse(greeting.body).content);
     });
-    stompClient.send("/app/hello/" + channel, {}, JSON.stringify({name: $("#name").val()}));
+
+    stompClient.send("/app/mud/user-input/" + currentUser, {}, JSON.stringify({command: $("#command").val()}));
 }
 
 function showGreeting(message) {
