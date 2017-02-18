@@ -1,24 +1,15 @@
 package hello;
 
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class Application {
+    private final Log logger = LogFactory.getLog(Application.class);
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-    }
-
-    @Bean
-    public Room buildMud() {
-        Room e = new Room();
-        Room w = new Room();
-
-        e.setWest(w);
-        w.setEast(e);
-
-        return e;
     }
 }
